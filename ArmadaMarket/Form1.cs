@@ -1,9 +1,11 @@
 ﻿using ArmadaMarket.Models;
+using Squirrel;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -20,8 +22,25 @@ namespace ArmadaMarket
             InitializeComponent();
             ListProducts();
             ListCategories();
+            AddVersionNumber();
+            CheckForUpdates();
         }
 
+        private void AddVersionNumber()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo versionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            this.Text += $" v.{versionInfo.FileVersion}";
+        }
+
+        private async Task CheckForUpdates()
+        {
+            using (var manager = new UpdateManager(@"C:\Temp\Releases"))
+            {
+                await manager.UpdateApp();
+            }
+
+        }
         private void lstCategories_SelectedIndexChanged(object sender, EventArgs e)
         {
             ListCategoryProducts();
